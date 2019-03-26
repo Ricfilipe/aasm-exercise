@@ -24,6 +24,11 @@ jar {
     }
 }
 
+run {
+    standardOutput= System.out
+    standardInput = System.in
+}
+
 dependencies {
 
     implementation 'com.google.guava:guava:27.0.1-jre'
@@ -31,4 +36,4 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-mainClassName = 'ist.meic.aasm.exercise.App'
+mainClassName = 'App'
