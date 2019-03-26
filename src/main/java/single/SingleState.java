@@ -40,11 +40,33 @@ public class SingleState extends InterpreterState {
         return false;
     }
 
+
+    private boolean CheckForCollision(Task t,Option option) {
+        for(Option op: t.options){
+            if(op.optionName == option.optionName){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean CheckForCollision(Option parent,Option option) {
+        for(Option op: parent.subOption){
+            if(op.optionName == option.optionName){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void generateOptions(String substring, Task t) throws Exception {
         int help=0;
         for(int i =0; i<substring.length();i++){
             if(substring.charAt(i)=='='){
                 Option op =new Option(substring.substring(help,i));
+                if(CheckForCollision(t,op)){
+                    throw new Exception();
+                }
                 t.options.add(op);
                i= getFirstOption(op,substring.substring(i+1))+i+1;
                i = getSecondOption(op,substring.substring(i))+i+1;
@@ -60,6 +82,9 @@ public class SingleState extends InterpreterState {
         for(int i =0; i<substring.length();i++){
             if(substring.charAt(i)=='='){
                 Option op =new Option(substring.substring(help,i));
+                if(CheckForCollision(t,op)){
+                    throw new Exception();
+                }
                 t.subOption.add(op);
                 i= getFirstOption(op,substring.substring(i+1))+i+1;
                 i = getSecondOption(op,substring.substring(i))+i+1;
@@ -107,10 +132,12 @@ public class SingleState extends InterpreterState {
 
             if (rest.charAt(i) == ',') {
                 option.Observed = Integer.valueOf(rest.substring(1, i));
+                option.isObservation=true;
                 i++;
                 return i;
             } else if (rest.charAt(i) == '%') {
                 option.belief = Double.valueOf(rest.substring(1, i));
+                option.isObservation=false;
                 i = i + 2;
                 return i;
             }

@@ -9,7 +9,7 @@ public class Task {
 
     public Task(String task){
         this.taskName=task;
-        System.out.println("Created Task "+task);
+
     }
     public String toString(){
         String buffer=taskName+"=[";

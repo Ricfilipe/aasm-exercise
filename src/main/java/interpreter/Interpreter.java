@@ -1,6 +1,7 @@
 package interpreter;
 
 import Commands.CmdError;
+import Commands.CmdExit;
 import Commands.Command;
 import single.SingleState;
 
@@ -27,6 +28,8 @@ public class Interpreter {
      if (!currentCommand.checkNum(args.length)) {
          this.currentCommand = new CmdError("Número errado de argumentos");
      }
+
+
      //fase 2 Intepretar estado
      if (!currentCommand.isSpecialCommand()){
          try {
@@ -38,11 +41,11 @@ public class Interpreter {
      }
 
 
-
      //fase 3 obter número de ops
      if(args.length==3 && !currentCommand.isSpecialCommand()) {
          getOP(args[2]);
      }
+
 
      if(!currentCommand.isSpecialCommand()){
         this.currentOP++;
@@ -112,7 +115,12 @@ public class Interpreter {
 
     private void getCommand(String arg) {
         if(!arg.startsWith("decide-")){
-            this.currentCommand = new CmdError(arg + " não existe...");
+
+            if(arg.equals("exit")){
+                this.currentCommand = new CmdExit();
+            }else {
+                this.currentCommand = new CmdError(arg + " não existe...");
+            }
             return;
         }
         String cmd = arg.split("-")[1];

@@ -13,7 +13,7 @@ public class Option {
     public String optionName;
     public Option( String name){
         this.optionName=name;
-        System.out.println("Create option "+name);
+
     }
 
     public boolean isFinal(){
