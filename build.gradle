@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'ist.aasm'
-version '1.0-SNAPSHOT'
+
 
 sourceCompatibility = 1.8
 
@@ -19,7 +19,7 @@ repositories {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'App'
+                'Main-Class': 'exercise'
         )
     }
 }

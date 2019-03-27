@@ -15,6 +15,12 @@ public class SingleState extends InterpreterState {
         return true;
     }
 
+    @Override
+    public void findOrCreateOption(String s, String s1) {
+        System.out.println(s);
+        System.out.println(s1);
+    }
+
     public void generateState(List<String> args) throws Exception {
         for(String task:args){
             for(int i=0; i<task.length();i++){

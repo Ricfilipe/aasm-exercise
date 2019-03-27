@@ -21,47 +21,52 @@ public class Interpreter {
 
     if(this.maxOP>1){
         alternativeOperation(args);
-    }
+        this.currentCommand=this.lastNormalCommand;
+    }else {
 
-     //fase 1 Selecionar Comando
-     getCommand(args[0]);
-     if (!currentCommand.checkNum(args.length)) {
-         this.currentCommand = new CmdError("Número errado de argumentos");
-     }
-
-
-     //fase 2 Intepretar estado
-     if (!currentCommand.isSpecialCommand()){
-         try {
-             getState(args[1]);
-             System.out.println(state.toString());
-         }catch (Exception e){
-             this.currentCommand = new CmdError("Sintaxe errada");
-         }
-     }
-
-
-     //fase 3 obter número de ops
-     if(args.length==3 && !currentCommand.isSpecialCommand()) {
-         getOP(args[2]);
-     }
-
-
-     if(!currentCommand.isSpecialCommand()){
-        this.currentOP++;
-        this.lastNormalCommand= currentCommand;
-        if(this.currentOP>=this.maxOP){
-            this.operation++;
-            this.currentOP=0;
+        //fase 1 Selecionar Comando
+        getCommand(args[0]);
+        if (!currentCommand.checkNum(args.length)) {
+            this.currentCommand = new CmdError("Número errado de argumentos");
         }
-     }
 
-     return currentCommand.execute(state);
+
+        //fase 2 Intepretar estado
+        if (!currentCommand.isSpecialCommand()) {
+            try {
+                getState(args[1]);
+                System.out.println(state.toString());
+            } catch (Exception e) {
+                this.currentCommand = new CmdError("Sintaxe errada");
+            }
+        }
+
+
+        //fase 3 obter número de ops
+        if (args.length == 3 && !currentCommand.isSpecialCommand()) {
+            getOP(args[2]);
+        }
+
+
+
+        }
+    if (!currentCommand.isSpecialCommand()) {
+        this.currentOP++;
+        this.lastNormalCommand = currentCommand;
+        if (this.currentOP >= this.maxOP) {
+            this.operation++;
+            this.currentOP = 0;
+        }
+    }
+    return currentCommand.execute(state);
  }
 
     private void alternativeOperation(String[] args) {
         if(args.length!=1){
             this.currentCommand = new CmdError("Número de argumentos é errado");
+        }else{
+            String[] arg= args[0].replace("(","").replace(")","").split(",");
+            state.findOrCreateOption(arg[0],arg[1]);
         }
 
     }

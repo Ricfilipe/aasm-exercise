@@ -28,13 +28,15 @@ public class Option {
             buffer=buffer+belief+"%";
         }
         if(!isFinal()){
+            buffer=buffer + ",[";
             for(int i=0; i<subOption.size();i++){
-                if(i<subOption.size()-1){
+                if(i!=0){
                     buffer= buffer +",";
                 }
                buffer=buffer + subOption.get(i).toString();
 
             }
+            buffer=buffer+"]";
         }else{
             buffer=buffer+","+value;
         }
