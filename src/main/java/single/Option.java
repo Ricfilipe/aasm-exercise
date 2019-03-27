@@ -42,4 +42,15 @@ public class Option {
         }
         return buffer+")";
     }
+
+    public double getTotalObersavation() throws Exception {
+        double total=0;
+        for(Option op : subOption){
+            if(!op.isObservation){
+                throw new Exception();
+            }
+            total+= op.Observed;
+        }
+        return total;
+    }
 }

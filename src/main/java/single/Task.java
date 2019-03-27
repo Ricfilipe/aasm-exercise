@@ -21,4 +21,15 @@ public class Task {
         }
         return buffer+"]";
     }
+
+    public double getTotalObersavation() throws Exception {
+        double total=0;
+        for(Option op : options){
+            if(!op.isObservation){
+                throw new Exception();
+            }
+            total+= op.Observed;
+        }
+        return total;
+    }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SingleState extends InterpreterState {
 
-    List<Task> tasks = new ArrayList<>();
+    public List<Task> tasks = new ArrayList<>();
 
     @Override
     public boolean isSingle() {

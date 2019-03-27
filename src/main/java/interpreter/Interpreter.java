@@ -58,7 +58,13 @@ public class Interpreter {
             this.currentOP = 0;
         }
     }
-    return currentCommand.execute(state);
+
+
+     try {
+         return currentCommand.execute(state);
+     } catch (Exception e) {
+         return new CmdError("Erro de Syntaxe").execute(state);
+     }
  }
 
     private void alternativeOperation(String[] args) {
