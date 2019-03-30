@@ -23,14 +23,14 @@ public class CommandRational implements Command {
 
         for (Task t : realState.tasks) {
             current = getTaskUtility(t);
-            System.out.println(t.taskName+": "+current);
+            System.out.println(t.name +": "+current);
             if (max < current) {
                 max = current;
                 bestTask = t;
             }
         }
 
-        return bestTask.taskName;
+        return bestTask.name;
     }
 
     private double getTaskUtility(Task t) throws Exception {
@@ -71,7 +71,7 @@ public class CommandRational implements Command {
 
     private double getSubOptionUtility(Option top) throws Exception {
         double utility=0;
-        for (Option op : top.subOption) {
+        for (Option op : top.options) {
             if (op.isFinal()) {
                 if (!op.isObservation) {
 

@@ -1,18 +1,17 @@
 package single;
 
-import java.util.ArrayList;
-import java.util.List;
+import interpreter.NamedClasse;
 
-public class Task {
-    public List<Option> options= new ArrayList<>();
-    public String taskName;
+public class Task implements NamedClasse {
+
+    public String name;
 
     public Task(String task){
-        this.taskName=task;
+        this.name =task;
 
     }
     public String toString(){
-        String buffer=taskName+"=[";
+        String buffer= name +"=[";
         for(int i=0; i<options.size();i++){
             buffer= buffer+ options.get(i).toString();
             if(i<options.size()-1){

@@ -1,27 +1,26 @@
 package single;
 
-import java.util.ArrayList;
-import java.util.List;
+import interpreter.NamedClasse;
 
-public class Option {
+public class Option implements NamedClasse {
 
-    public List<Option> subOption= new ArrayList<>();
+
     public double belief;
     public int Observed;
     public boolean isObservation;
     public int value;
-    public String optionName;
+    public String name;
     public Option( String name){
-        this.optionName=name;
+        this.name =name;
 
     }
 
     public boolean isFinal(){
-        return subOption.isEmpty();
+        return options.isEmpty();
     }
 
     public String toString(){
-        String buffer=optionName+"=(";
+        String buffer= name +"=(";
         if(isObservation){
             buffer=buffer+Observed;
         }else{
@@ -29,11 +28,11 @@ public class Option {
         }
         if(!isFinal()){
             buffer=buffer + ",[";
-            for(int i=0; i<subOption.size();i++){
+            for(int i = 0; i< options.size(); i++){
                 if(i!=0){
                     buffer= buffer +",";
                 }
-               buffer=buffer + subOption.get(i).toString();
+               buffer=buffer + options.get(i).toString();
 
             }
             buffer=buffer+"]";
@@ -45,7 +44,7 @@ public class Option {
 
     public double getTotalObersavation() throws Exception {
         double total=0;
-        for(Option op : subOption){
+        for(Option op : options){
             if(!op.isObservation){
                 throw new Exception();
             }

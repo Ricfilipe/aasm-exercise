@@ -1,9 +1,10 @@
 package single;
 
 import interpreter.InterpreterState;
-
+import interpreter.NamedClasse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SingleState extends InterpreterState {
@@ -16,9 +17,53 @@ public class SingleState extends InterpreterState {
     }
 
     @Override
-    public void findOrCreateOption(String s, String s1) {
-        System.out.println(s);
-        System.out.println(s1);
+    public void findOrCreateOption(String s, String s1) throws Exception {
+        int value = Integer.valueOf(s);
+        String[] hierarchy = s1.split(".");
+        Task task= lookForTask(hierarchy[0]);
+        AddOrCreate(task, Arrays.copyOfRange(hierarchy,1,hierarchy.length),value);
+    }
+
+    private void AddOrCreate(NamedClasse nc, String[] hierarchy,int value) throws Exception {
+        Option op = null;
+        for(Option o : nc.options){
+            if(o.name==hierarchy[0]){
+                op=o;
+                if(op.isObservation){
+                    op.Observed++;
+                }else{
+                    nc.options.clear();
+                    nc.options.add(op);
+                    op.Observed++;
+                    op.isObservation = true;
+                }
+            }
+        }
+        if(hierarchy.length==1){
+            if(op == null){
+                op = new Option(hierarchy[0]);
+                op.isObservation=true;
+                op.Observed = 1;
+                op.value = value;
+                nc.options.add(op);
+            }else if(op.isFinal()){
+                op.Observed ++;
+            }else{
+                throw new Exception();
+            }
+        }else{
+            AddOrCreate(op, Arrays.copyOfRange(hierarchy,1,hierarchy.length),value);
+        }
+
+    }
+
+    private Task lookForTask(String s) throws Exception {
+        for(Task t: tasks){
+            if(t.name == s){
+                return t;
+            }
+        }
+        throw new Exception();
     }
 
     public void generateState(List<String> args) throws Exception {
@@ -39,7 +84,7 @@ public class SingleState extends InterpreterState {
 
     private boolean CheckForCollision(Task t) {
         for(Task task:this.tasks){
-            if(task.taskName == t.taskName){
+            if(task.name == t.name){
                 return true;
             }
         }
@@ -49,7 +94,7 @@ public class SingleState extends InterpreterState {
 
     private boolean CheckForCollision(Task t,Option option) {
         for(Option op: t.options){
-            if(op.optionName == option.optionName){
+            if(op.name == option.name){
                 return true;
             }
         }
@@ -57,8 +102,8 @@ public class SingleState extends InterpreterState {
     }
 
     private boolean CheckForCollision(Option parent,Option option) {
-        for(Option op: parent.subOption){
-            if(op.optionName == option.optionName){
+        for(Option op: parent.options){
+            if(op.name == option.name){
                 return true;
             }
         }
@@ -91,7 +136,7 @@ public class SingleState extends InterpreterState {
                 if(CheckForCollision(t,op)){
                     throw new Exception();
                 }
-                t.subOption.add(op);
+                t.options.add(op);
                 i= getFirstOption(op,substring.substring(i+1))+i+1;
                 i = getSecondOption(op,substring.substring(i))+i+1;
                 help=i;
