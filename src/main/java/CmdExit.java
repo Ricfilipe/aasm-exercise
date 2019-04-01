@@ -1,24 +1,16 @@
-package Commands;
-
-import interpreter.InterpreterState;
-
-public class CmdError implements Command{
-    private String message;
+public class CmdExit implements Command {
 
     @Override
     public boolean isForSingle() {
-        return false;
+        return true;
     }
 
     @Override
     public String execute(InterpreterState state) {
-        return message;
+        System.out.println("Bye!");
+        System.exit(0);
+        return "Never gets here...";
     }
-
-    public CmdError(String errorMsg){
-        this.message=errorMsg;
-    }
-
 
     @Override
     public boolean checkNum(int numArgs) {

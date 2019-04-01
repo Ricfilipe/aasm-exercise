@@ -1,5 +1,3 @@
-import interpreter.Interpreter;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,8 +9,12 @@ public class exercise {
         Interpreter interpreter = new Interpreter();
 
         while (true){
-            System.out.print(interpreter.operation+">");
-            System.out.println(interpreter.interpret(input.readLine()));
+            String in = input.readLine();
+            if(in != null) {
+                System.out.println(interpreter.interpret(in));
+            }else{
+                System.exit(0);
+            }
 
         }
     }

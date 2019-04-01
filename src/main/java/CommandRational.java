@@ -1,10 +1,3 @@
-package Commands;
-
-import interpreter.InterpreterState;
-import single.Option;
-import single.SingleState;
-import single.Task;
-
 public class CommandRational implements Command {
 
 
@@ -13,7 +6,8 @@ public class CommandRational implements Command {
         return true;
     }
 
-    @Override
+
+    @SuppressWarnings("unchecked")
     public String execute(InterpreterState state) throws Exception {
 
         double current = 0;
@@ -23,16 +17,16 @@ public class CommandRational implements Command {
 
         for (Task t : realState.tasks) {
             current = getTaskUtility(t);
-            System.out.println(t.name +": "+current);
             if (max < current) {
                 max = current;
                 bestTask = t;
             }
         }
-
+        realState.pickedTask = bestTask;
         return bestTask.name;
     }
 
+    @SuppressWarnings({"Duplicates","unchecked"})
     private double getTaskUtility(Task t) throws Exception {
         double utility=0;
         for (Option op : t.options) {
@@ -60,7 +54,7 @@ public class CommandRational implements Command {
 
     @Override
     public boolean checkNum(int numArgs) {
-        return numArgs == 3;
+        return numArgs == 3 || numArgs == 2;
     }
 
     @Override
@@ -68,7 +62,7 @@ public class CommandRational implements Command {
         return false;
     }
 
-
+    @SuppressWarnings({"Duplicates","unchecked"})
     private double getSubOptionUtility(Option top) throws Exception {
         double utility=0;
         for (Option op : top.options) {

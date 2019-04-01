@@ -17,16 +17,15 @@ repositories {
 }
 
 jar {
-    manifest {
-        attributes(
-                'Main-Class': 'exercise'
-        )
-    }
+        from('src/main/java')
+
 }
 
 run {
     standardOutput= System.out
-    standardInput = System.in
+    //standardInput = System.in
+    standardInput = new FileInputStream('input')
+
 }
 
 dependencies {
@@ -36,4 +35,4 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-mainClassName = 'App'
+mainClassName = 'exercise'

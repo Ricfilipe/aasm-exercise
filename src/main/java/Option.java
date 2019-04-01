@@ -1,18 +1,15 @@
-package single;
-
-import interpreter.NamedClasse;
-
-public class Option implements NamedClasse {
+public class Option extends NamedClasse {
 
 
     public double belief;
     public int Observed;
     public boolean isObservation;
-    public int value;
-    public String name;
+    public double value;
+
 
     public Option(String name) {
         this.name = name;
+        Observed = 0;
 
     }
 
@@ -52,5 +49,18 @@ public class Option implements NamedClasse {
             total += op.Observed;
         }
         return total;
+    }
+
+    public boolean hasObeservation() {
+
+        for (Option o : options) {
+            if (o.isObservation) {
+                return true;
+            } else if (!o.isFinal() && o.hasObeservation()) {
+                o.isObservation = true;
+                o.Observed = 0;
+            }
+        }
+        return false;
     }
 }

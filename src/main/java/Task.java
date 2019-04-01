@@ -1,10 +1,6 @@
-package single;
+public class Task extends NamedClasse {
 
-import interpreter.NamedClasse;
 
-public class Task implements NamedClasse {
-
-    public String name;
 
     public Task(String task){
         this.name =task;

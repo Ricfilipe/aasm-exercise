@@ -1,10 +1,3 @@
-package interpreter;
-
-import Commands.CmdError;
-import Commands.CmdExit;
-import Commands.Command;
-import single.SingleState;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +13,20 @@ public class Interpreter {
      String[] args = arg.split(" ");
 
     if(this.maxOP>1){
-        alternativeOperation(args);
-        this.currentCommand=this.lastNormalCommand;
+        try {
+            alternativeOperation(args);
+            this.currentCommand = this.lastNormalCommand;
+        } catch (Exception e) {
+            this.currentCommand = new CmdError("Erro de sintaxe");
+            this.maxOP = 1;
+            this.operation++;
+        }
     }else {
 
         //fase 1 Selecionar Comando
         getCommand(args[0]);
         if (!currentCommand.checkNum(args.length)) {
-            this.currentCommand = new CmdError("Número errado de argumentos");
+            this.currentCommand = new CmdError("Numero errado de argumentos");
         }
 
 
@@ -35,14 +34,13 @@ public class Interpreter {
         if (!currentCommand.isSpecialCommand()) {
             try {
                 getState(args[1]);
-                System.out.println(state.toString());
             } catch (Exception e) {
                 this.currentCommand = new CmdError("Sintaxe errada");
             }
         }
 
 
-        //fase 3 obter número de ops
+        //fase 3 obter numero de ops
         if (args.length == 3 && !currentCommand.isSpecialCommand()) {
             getOP(args[2]);
         }
@@ -55,6 +53,7 @@ public class Interpreter {
         this.lastNormalCommand = currentCommand;
         if (this.currentOP >= this.maxOP) {
             this.operation++;
+            this.maxOP = 1;
             this.currentOP = 0;
         }
     }
@@ -63,15 +62,21 @@ public class Interpreter {
      try {
          return currentCommand.execute(state);
      } catch (Exception e) {
-         return new CmdError("Erro de Syntaxe").execute(state);
+        // return new CmdError("Erro de Syntaxe").execute(state);
+         throw new RuntimeException();
      }
  }
 
-    private void alternativeOperation(String[] args) {
+    private void alternativeOperation(String[] args) throws Exception {
         if(args.length!=1){
-            this.currentCommand = new CmdError("Número de argumentos é errado");
+            this.currentCommand = new CmdError("Numero de argumentos e errado");
         }else{
+            if (args[0].equals("exit")) {
+                this.lastNormalCommand = new CmdExit();
+                return;
+            }
             String[] arg= args[0].replace("(","").replace(")","").split(",");
+
             state.findOrCreateOption(arg[0],arg[1]);
         }
 
@@ -81,7 +86,8 @@ public class Interpreter {
         try{
             this.maxOP = Integer.valueOf(arg);
         }catch(Exception x){
-            this.currentCommand = new CmdError("O último argumento não é um inteiro");
+            this.currentCommand = new CmdError("O ultimo argumento nao e um inteiro");
+            throw new RuntimeException();
         }
 
     }
@@ -130,7 +136,7 @@ public class Interpreter {
             if(arg.equals("exit")){
                 this.currentCommand = new CmdExit();
             }else {
-                this.currentCommand = new CmdError(arg + " não existe...");
+                this.currentCommand = new CmdError(arg + " nao existe...");
             }
             return;
         }
@@ -138,9 +144,9 @@ public class Interpreter {
         cmd = cmd.substring(0, 1).toUpperCase() + cmd.substring(1);
 
         try {
-            this.currentCommand = (Command) Class.forName("Commands.Command"+cmd).newInstance();
+            this.currentCommand = (Command) Class.forName("Command" + cmd).newInstance();
         }catch( ClassNotFoundException e){
-            this.currentCommand =new CmdError( arg +" não existe");
+            this.currentCommand = new CmdError(arg + " nao existe");
         }catch (Exception x){
             this.currentCommand = new CmdError("Algo correu mal :(");
 
