@@ -101,12 +101,18 @@ public class Interpreter {
 
     }
 
-    private void buildMultiState(String arg) {
-     //TODO
+    private void buildMultiState(String arg) throws Exception {
+        String realArg = arg.replace("mine=","");
+        String[] agents = realArg.split(",peer=");
+        List<String> myTasks = splitTask(agents[0]);
+        List<String> peerTasks = splitTask(agents[1]);
+        this.state = new MatrixState();
+        ((MatrixState) state).generateMyState(myTasks);
+        ((MatrixState) state).generatePeerState(peerTasks);
     }
 
     private void buildSingleState(String arg) throws Exception {
-        int depth=0;
+
         List<String> tasks = splitTask(arg);
         this.state = new SingleState();
         ((SingleState) this.state).generateState(tasks);
