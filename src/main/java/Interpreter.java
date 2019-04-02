@@ -35,6 +35,7 @@ public class Interpreter {
             try {
                 getState(args[1]);
             } catch (Exception e) {
+                e.printStackTrace();
                 this.currentCommand = new CmdError("Sintaxe errada");
             }
         }
@@ -62,8 +63,8 @@ public class Interpreter {
      try {
          return currentCommand.execute(state);
      } catch (Exception e) {
-        // return new CmdError("Erro de Syntaxe").execute(state);
-         throw new RuntimeException();
+         e.printStackTrace();
+        return new CmdError("Erro de Syntaxe").execute(state);
      }
  }
 
@@ -116,6 +117,7 @@ public class Interpreter {
         List<String> tasks = splitTask(arg);
         this.state = new SingleState();
         ((SingleState) this.state).generateState(tasks);
+
      
     }
 

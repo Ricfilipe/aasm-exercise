@@ -1,6 +1,6 @@
 public class Task extends NamedClasse {
 
-
+    public double minU, eu;
 
     public Task(String task){
         this.name =task;

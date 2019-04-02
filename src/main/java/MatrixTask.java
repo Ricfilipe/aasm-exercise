@@ -1,6 +1,7 @@
 public class MatrixTask {
     public String myName, peerName;
     public Task myTask, peerTask;
+    public double myValue=0,peerValue =0;
 
     public MatrixTask(String substring) {
         String [] names = substring.split("\\|");

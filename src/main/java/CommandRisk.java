@@ -4,10 +4,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class CommandRisk implements Command {
 
-    private List<Double> listEU = new ArrayList<>();
-    private List<Double> minU = new ArrayList<>();
     private List<Task> taskList = new ArrayList<>();
-    private int[] bestProbs;
+    private double[] bestProbs;
     private float maxValue = Float.NEGATIVE_INFINITY;
 
     @Override
@@ -20,28 +18,29 @@ public class CommandRisk implements Command {
     public String execute(InterpreterState state) throws Exception {
 
         SingleState realState = (SingleState) state;
-
         for (int i = 0; i < realState.tasks.size(); i++) {
             Task t = realState.tasks.get(i);
-            listEU.add(getTaskUtility(t));
-            minU.add(t.getMinU());
             taskList.add(t);
+            t.minU =t.getMinU();
+            t.eu = getTaskUtility(t);
+            t.options.clear();
         }
-
         List<Task> toRemove = new ArrayList<>();
         for (int i = 0; i < taskList.size() - 1; i++) {
+            Task t1=taskList.get(i);
             for (int j = i + 1; j < taskList.size(); j++) {
-                if (listEU.get(i).floatValue() > listEU.get(j).floatValue()) {
-                    if (minU.get(i).floatValue() >= minU.get(j).floatValue() && !toRemove.contains(taskList.get(j))) {
-                        toRemove.add(taskList.get(j));
-                    } else if (minU.get(i).floatValue() < 0 && minU.get(j).floatValue() < 0 && !toRemove.contains(taskList.get(i))) {
-                        toRemove.add(taskList.get(i));
+               Task t2=taskList.get(j);
+                if (t1.eu >= t2.eu) {
+                    if (t1.minU >= t2.minU&& !toRemove.contains(t2)) {
+                        toRemove.add(t2);
+                    } else if (t1.minU < 0 && t2.minU<= 0 && !toRemove.contains(t1)) {
+                        toRemove.add(t1);
                     }
-                } else if (listEU.get(i).floatValue() < listEU.get(j).floatValue()) {
-                    if (minU.get(i).floatValue() <= minU.get(j).floatValue() && !toRemove.contains(taskList.get(i))) {
-                        toRemove.add(taskList.get(i));
-                    } else if (minU.get(i).floatValue() < 0 && minU.get(j).floatValue() < 0 && !toRemove.contains(taskList.get(j))) {
-                        toRemove.add(taskList.get(j));
+                } else if (t1.eu <= t2.eu) {
+                    if (t1.minU <= t2.minU&& !toRemove.contains(t1)) {
+                        toRemove.add(t1);
+                    } else if (t1.minU <= 0 && t2.minU< 0 && !toRemove.contains(t2)) {
+                        toRemove.add(t2);
                     }
                 }
             }
@@ -50,22 +49,31 @@ public class CommandRisk implements Command {
         for (Task t : toRemove) {
             int idx = taskList.indexOf(t);
             taskList.remove(idx);
-            minU.remove(idx);
-            listEU.remove(idx);
         }
 
+        bestProbs = new double[taskList.size()];
         return calculateProb();
     }
 
     @SuppressWarnings("unchecked")
     private String calculateProb() {
-        if (listEU.size() == 1) {
+
+        if (taskList.size() == 1) {
             return "(1.00," + taskList.get(0).name + ")";
+        }else if(taskList.size() == 2) {
+            Task t1 = taskList.get(0) , t2 = taskList.get(1);
+            if(t2.eu == t1.eu  && (t2.minU == t1.minU || (t1.eu>0 && t2.eu>0))){
+                bestProbs[0]=500;
+                bestProbs[1]=500;
+            }else{
+                bestProbs[0] = (-t2.minU)*1000/(t1.minU-t2.minU);
+                bestProbs[1] = 1000-bestProbs[0];
+            }
+        }else{
+            return "";
         }
 
-        recursiveHelper(1000 - 10 * (taskList.size() - 1)
-                , taskList.size(),
-                new int[0]);
+
         String buffer = "(";
         for (int i = 0; i < bestProbs.length; i++) {
             buffer = buffer + "0." + String.format("%02d", Math.round(bestProbs[i] / 10f));
@@ -92,52 +100,30 @@ public class CommandRisk implements Command {
 
 
 
-    private void recursiveHelper(int maxprob, int size, int[] probs) {
 
-        if (size == 1) {
-            float current = 0;
-            float minCurrent = 0;
-            int[] temp = new int[probs.length + 1];
-            temp[probs.length] = maxprob;
-            for (int i = 0; i < probs.length; i++) {
-                temp[i] = probs[i];
-                current += probs[i] * (listEU.get(i));
-                minCurrent += probs[i] * minU.get(i);
-            }
 
-            current += maxprob * listEU.get(listEU.size() - 1).floatValue();
-            minCurrent += maxprob * minU.get(listEU.size() - 1);
-            if (current > maxValue && minCurrent >= 0) {
-                maxValue = current;
-                bestProbs = temp;
-            } else if (current == maxValue && minCurrent >= 0) {
-                boolean check = true;
-                for (int i = 0; i < temp.length - 1; i++) {
-                    for (int j = i + 1; j < temp.length; j++) {
-                        if (listEU.get(i).equals(listEU.get(j)) && temp[i] == temp[j]) {
-                            check = true;
-                        } else if (listEU.get(i).equals(listEU.get(j))) {
-                            check = false;
-                            break;
-                        }
-                    }
-                    if (!check) {
+    private void calculateBest(float current, float minCurrent, double[] temp) {
+        if (current > maxValue && minCurrent >= 0) {
+            maxValue = current;
+            bestProbs = temp;
+        } else if (current == maxValue && minCurrent >= 0) {
+            boolean check = true;
+            for (int i = 0; i < temp.length - 1; i++) {
+                for (int j = i + 1; j < temp.length; j++) {
+                    if (taskList.get(i).equals(taskList.get(j)) && temp[i] == temp[j]) {
+                        check = true;
+                    } else if (taskList.get(i).equals(taskList.get(j))) {
+                        check = false;
                         break;
                     }
                 }
-                if (check) {
-                    bestProbs = temp;
-                    return;
+                if (!check) {
+                    break;
                 }
             }
-        } else {
-            int[] temp = new int[probs.length + 1];
-            for (int i = 0; i < probs.length; i++) {
-                temp[i] = probs[i];
-            }
-            for (int p = maxprob; p > 9; p = p - 1) {
-                temp[probs.length] = p;
-                recursiveHelper(maxprob - p + 10, size - 1, temp);
+            if (check) {
+                bestProbs = temp;
+                return;
             }
         }
     }
