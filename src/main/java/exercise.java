@@ -7,11 +7,10 @@ public class exercise {
         BufferedReader input =
                 new BufferedReader(new InputStreamReader(System.in));
         Interpreter interpreter = new Interpreter();
-
         while (true){
             String in = input.readLine();
             if(in != null) {
-                System.out.println(interpreter.interpret(in));
+                    System.out.println(interpreter.interpret(in));
             }else{
                 System.exit(0);
             }
